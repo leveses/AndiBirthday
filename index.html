@@ -1,460 +1,404 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Boldog születésnapot Andi! 🎉</title>
-  <meta name="description" content="Ajándékdoboz kuponokkal – Boldog születésnapot Andi!">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Boldog születésnapot, Andi!</title>
   <style>
     :root{
-      --bg1:#fdf3ff; --bg2:#ffeef7;
-      --pink:#ff4da6; --vio:#8a5cff; --gold:#ffd166; --mint:#22c55e; --sky:#38bdf8;
-      --shadow: 0 10px 30px rgba(0,0,0,.18);
+      --bg1:#0f1021;
+      --bg2:#1b1c3a;
+      --accent:#ff5fa2;
+      --accent2:#ffd166;
+      --box:#7cb7ff;
+      --box-dark:#5a8fdd;
+      --card:#ffffff;
+      --text:#f8f8ff;
     }
-    *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
-    html,body{height:100%}
-    body{
-      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 50% 20%, var(--bg2), var(--bg1));
-      overflow:hidden; touch-action:manipulation;
-    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:radial-gradient(1200px 800px at 50% 20%, #1d2050 0%, var(--bg1) 60%, #0b0c1d 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;overflow:hidden}
 
-    /* Header */
-    .title{
-      position:fixed; top:12px; left:0; right:0; text-align:center; z-index:5;
-      font-weight:800; letter-spacing:.3px; color:#4b3b6a;
-      text-shadow:0 2px 0 #fff, 0 6px 18px rgba(0,0,0,.12);
-      padding:8px 12px; font-size: clamp(18px, 4.8vw, 36px);
-    }
-    .sub{ font-weight:600; color:#7a6c9b; font-size: clamp(12px, 2.8vw, 16px)}
+    canvas.fx{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-    /* Stage */
-    .stage{
-      position:relative; width:100vw; height:100vh; overflow:hidden;
-      display:grid; place-items:center; padding-top:40px;
-    }
+    .stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;z-index:10;padding-top:clamp(18px,4vh,40px);}
 
-    /* Gift box */
-    #gift{
-      position:relative; width:min(68vw, 340px); height:min(54vw, 270px);
-      animation: float 3.6s ease-in-out infinite;
-      z-index:3;
+    /* CÍMSOR – kirakós helye (a „Andi” marad fixen) */
+    h1{margin:0 12px 12px;font-weight:800;letter-spacing:0.3px;text-align:center;font-size:clamp(20px,4.8vw,36px)}
+    h1 .name{color:var(--accent2)}
+    #assembled{display:inline-flex;gap:.18em;min-height:1em}
+    .letter-slot{
+      min-width:0.6em; display:inline-flex; align-items:center; justify-content:center;
+      border-bottom:2px dashed #ffffff33; color:#fff; font-weight:900; text-transform:lowercase;
     }
-    @keyframes float{
-      0%,100%{ transform: translateY(0) rotate(0deg) }
-      50%{ transform: translateY(-6px) rotate(-.6deg) }
-    }
-    .box{
-      position:absolute; inset:auto 0 0 0; height:70%;
-      margin:auto; width:100%;
-      background:
-        linear-gradient(90deg, #ff9ad1 0 18%, #ffd6ea 18% 20%, #ff9ad1 20% 80%, #ffd6ea 80% 82%, #ff9ad1 82% 100%);
-      border-radius:16px; box-shadow:var(--shadow);
-      border:3px solid #ffb8dc;
-    }
-    .ribbon-vert{
-      position:absolute; top:0; bottom:0; left:50%; width:16%;
-      transform:translateX(-50%);
-      background: linear-gradient(#ffd6ea, #ff8cc8);
-      filter:saturate(1.1);
-      border-radius:12px;
-    }
-    .lid{
-      position:absolute; top:-22%; left:50%; transform:translateX(-50%);
-      width:110%; height:36%;
-      background:
-        linear-gradient(90deg, #ff7fbe 0 18%, #ffe0ef 18% 20%, #ff7fbe 20% 80%, #ffe0ef 80% 82%, #ff7fbe 82% 100%);
-      border-radius:18px; box-shadow:var(--shadow);
-      border:3px solid #ffb8dc;
-      transform-origin: 50% 120%;
-      transition: transform .6s cubic-bezier(.22,1,.36,1), top .6s cubic-bezier(.22,1,.36,1);
-    }
-    .bow{
-      position:absolute; top:-18px; left:50%; transform:translateX(-50%);
-      width:120px; height:70px;
-      background: radial-gradient(circle at 30% 50%, #fff, #ffd6ea 60%);
-      border-radius:60px/40px;
-      box-shadow: inset 0 10px 18px rgba(255,0,120,.15), 0 6px 16px rgba(0,0,0,.1);
-    }
-    .bow:before, .bow:after{
-      content:""; position:absolute; top:10px; width:72px; height:48px;
-      background: radial-gradient(circle at 35% 50%, #ffb3d8, #ff79bd 70%);
-      border-radius:50px 50px 10px 50px;
-      box-shadow: inset 0 10px 14px rgba(255,255,255,.35);
-    }
-    .bow:before{ left:-62px; transform:rotate(-16deg) }
-    .bow:after{ right:-62px; transform:scaleX(-1) rotate(-16deg) }
-    /* open state */
-    #gift.open .lid{ transform:translateX(-50%) rotate(-18deg); top:-48% }
-    #gift.fall .lid{ animation: lidFall 1.4s .5s forwards cubic-bezier(.2,.9,.1,1.1) }
-    @keyframes lidFall{
-      0%{ transform:translateX(-50%) rotate(-18deg); top:-48% }
-      60%{ transform:translate(-60%, 80%) rotate(22deg) }
-      100%{ transform:translate(-80%, 180%) rotate(34deg) }
-    }
+    .letter-slot.space{border-bottom:none; width:.4em}
+    .letter-slot.filled{border-bottom-color:transparent; color:#fff}
 
-    /* Coupons */
-    #coupons{
-      position:absolute; inset:0; display:flex; gap:min(4vw,16px);
-      align-items:flex-end; justify-content:center; pointer-events:none; z-index:2;
-    }
-    .coupon{
-      pointer-events:auto;
-      width:min(46vw, 240px); aspect-ratio: 1.4/1;
-      background:#fff; border:2px dashed #d2c4ff; border-radius:20px;
-      box-shadow: var(--shadow);
-      display:flex; flex-direction:column; justify-content:center; align-items:center;
-      transform: translateY(40%) scale(.9); opacity:0;
-    }
-    .coupon.show{ animation: rise .8s forwards cubic-bezier(.22,1,.36,1)}
-    .coupon:nth-child(1).show{ animation-delay:.1s }
-    .coupon:nth-child(2).show{ animation-delay:.22s }
-    @keyframes rise{
-      from{ transform: translateY(40%) scale(.9); opacity:0 }
-      to{ transform: translateY(-14%) scale(1); opacity:1 }
-    }
-    .coupon .em{ font-size: clamp(26px, 10vw, 40px); line-height:1; margin-bottom:6px }
-    .coupon h3{ margin:0 0 6px; font-size: clamp(14px, 4.6vw, 18px); color:#4b3b6a }
-    .coupon p{ margin:0; font-size: clamp(12px, 3.6vw, 14px); color:#6b5a8e }
-    .coupon:hover{ transform: translateY(-16%) scale(1.03) }
-    .hidden{ display:none }
+    .scene{position:relative;display:grid;place-items:center;width:100%;height:100%;padding-bottom:22vh}
 
-    /* Coupon overlay */
-    .overlay{
-      position:fixed; inset:0; background:rgba(10,8,25,.5);
-      display:grid; place-items:center; z-index:6; backdrop-filter: blur(3px);
-    }
-    .overlay .big{
-      width:min(92vw, 480px); background:#fff; border-radius:22px; border:3px dashed #c7b8ff;
-      box-shadow: 0 18px 60px rgba(0,0,0,.35); padding:20px 18px 16px; position:relative;
-      animation: pop .25s ease-out;
-    }
-    @keyframes pop{from{transform:scale(.92); opacity:.6}to{transform:scale(1); opacity:1}}
-    .close{
-      position:absolute; right:10px; top:8px; border:none; background:#f3edff; color:#6b5a8e;
-      border-radius:999px; width:36px; height:36px; font-size:18px; cursor:pointer;
-      box-shadow:0 2px 10px rgba(0,0,0,.1)
-    }
-    .big .em{ font-size:46px; margin:6px 0 2px }
-    .big h2{ margin:4px 0 8px; font-size:22px; color:#3b2f58 }
-    .big p{ margin:0 0 8px; color:#584b7b; line-height:1.4; font-size:15px; text-align:center }
-    .tag{ display:inline-block; padding:4px 10px; background:#f6f0ff; color:#6b5a8e; border-radius:12px; font-size:12px; }
+    /* Ajándékdoboz */
+    #gift{position:relative;width:min(68vw,360px);height:min(52vw,275px);cursor:pointer;}
+    #gift .box{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:88%;height:70%;background:linear-gradient(180deg,var(--box) 0%, var(--box-dark) 100%);border-radius:12px 12px 16px 16px;box-shadow:0 14px 40px rgba(0,0,0,.35), inset 0 -6px 14px rgba(0,0,0,.25);}
+    #gift .box::before{content:"";position:absolute;inset:0 0;left:calc(50% - 8px);width:16px;background:linear-gradient(180deg,var(--accent) 0%, #ff3f8c 100%);border-radius:10px}
+    #gift .box::after{content:"";position:absolute;top:40%;left:0;right:0;height:16px;background:linear-gradient(180deg,var(--accent) 0%, #ff3f8c 100%);}
+    #gift .lid{position:absolute;bottom:66%;left:50%;transform:translateX(-50%) rotateX(0deg);transform-origin:50% 100%;width:98%;height:32%;background:linear-gradient(180deg,var(--box-dark) 0%, #3b64b8 100%);border-radius:14px;box-shadow:0 8px 20px rgba(0,0,0,.35);transition:transform .9s cubic-bezier(.2,.9,.1,1), filter .4s;}
+    #gift .lid::before{content:"";position:absolute;left:calc(50% - 10px);width:20px;top:0;bottom:0;background:linear-gradient(180deg,var(--accent) 0%, #ff3f8c 100%);border-radius:10px}
+    #gift .glow{position:absolute;inset:auto 8% 60% 8%;height:0;border-radius:12px;filter:blur(14px);opacity:.0;transition:opacity .6s}
+    #gift.open .glow{opacity:.6;animation:glowPulse 1.4s ease-in-out infinite alternate}
+    @keyframes glowPulse{from{box-shadow:0 0 40px 8px rgba(255,255,255,.0),0 0 140px 30px rgba(255,219,90,.0)}to{box-shadow:0 0 60px 12px rgba(255,255,255,.25),0 0 220px 46px rgba(255,219,90,.25)}}
+    #gift.open .lid{transform:translateX(-50%) rotateX(70deg) rotateZ(0.4deg)}
 
-    /* Balloons */
+    /* Ajándékkártyák */
+    .cards{position:absolute;left:50%;bottom:28%;transform:translateX(-50%) translateY(20px) scale(0.96);display:flex;gap:12px;pointer-events:none}
+    .card{width:clamp(120px,28vw,170px);aspect-ratio:5/7;background:var(--card);color:#222;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;padding:12px 10px;text-align:center;font-weight:700;line-height:1.2;opacity:0;transform:translateY(30px) rotate(-3deg);transition:transform .8s cubic-bezier(.2,.9,.1,1), opacity .6s}
+    .card b{display:block;color:#e63978;margin-bottom:6px}
+    .card:nth-child(2){transform:translateY(30px) rotate(5deg)}
+    #gift.open .card{opacity:1;transform:translateY(-42px) rotate(-6deg)}
+    #gift.open .card:nth-child(2){transform:translateY(-32px) rotate(6deg)}
+
+    /* Lufik konténer és lufi stílus (repkedős) */
+    .balloons{position:fixed;inset:0;pointer-events:none}
     .balloon{
-      position:absolute; width: clamp(38px, 14vw, 80px); height: clamp(48px, 18vw, 110px);
-      border-radius:50% 50% 45% 45%; box-shadow: inset 0 -12px 24px rgba(0,0,0,.12), var(--shadow);
-      cursor:pointer; touch-action:none; z-index:1;
+      position:absolute; width:clamp(36px,8vw,64px); aspect-ratio:1/1.25;
+      background:radial-gradient(60% 70% at 50% 30%, #fff8 0%, transparent 70%), var(--col, #ff7aa2);
+      border-radius:50% 50% 46% 46% / 56% 56% 44% 44%;
+      box-shadow:0 6px 18px rgba(0,0,0,.35); pointer-events:auto;
+      display:flex; align-items:center; justify-content:center; font-weight:900; color:#111; user-select:none;
+      transition:transform .2s ease;
     }
-    .balloon:after{
-      content:""; position:absolute; left:50%; bottom:-36%;
-      width:2px; height:38%; background:rgba(0,0,0,.18); transform:translateX(-50%); border-radius:2px;
-    }
-    .balloon .shine{
-      position:absolute; top:10%; left:18%; width:22%; height:30%; border-radius:100px;
-      background:rgba(255,255,255,.55); filter:blur(1px);
+    .balloon:after{content:"";position:absolute;bottom:-24%;left:50%;width:2px;height:32%;background:#ddd;transform:translateX(-50%)}
+    .balloon .shine{position:absolute;top:14%;left:26%;width:14%;height:20%;border-radius:50%;background:#ffffffaa;filter:blur(2px)}
+    .balloon.popped{transform:scale(0); opacity:0; pointer-events:none; transition:transform .25s ease, opacity .25s ease}
+
+    /* Repülő betű anim (ballonból a helyére) */
+    .fly-letter{
+      position:fixed; left:0; top:0; transform:translate(-50%,-50%);
+      font-weight:900; font-size:clamp(18px,6vw,28px); color:#fff; z-index:15;
+      transition:transform .7s cubic-bezier(.2,.9,.1,1), opacity .7s;
+      text-shadow:0 4px 14px rgba(0,0,0,.5);
     }
 
-    /* Confetti / fireworks canvas */
-    #fx{ position:fixed; inset:0; pointer-events:none; z-index:4 }
+    .deck{position:relative}
+    .shadow{position:absolute;bottom:8%;left:50%;transform:translateX(-50%);width:min(68vw,360px);height:18px;background:radial-gradient(closest-side,rgba(0,0,0,.5),transparent);filter:blur(2px);opacity:.7}
+    .hint{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);font-size:12px;color:#cfd3ff99;background:rgba(255,255,255,.04);padding:6px 10px;border:1px solid rgba(255,255,255,.06);border-radius:999px;backdrop-filter:blur(6px);z-index:20}
 
-    /* Tiny confetti bg bits */
-    .confetti-bit{
-      position:absolute; width:10px; height:14px; opacity:.9;
-      animation: fall 3.8s linear forwards;
-    }
-    @keyframes fall{
-      to{ transform: translateY(110vh) rotate(540deg); opacity:.2 }
+    @media (min-width:800px){
+      .scene{padding-bottom:8vh}
+      #gift{width:min(40vw,420px);height:min(30vw,300px)}
+      .shadow{width:min(40vw,420px)}
     }
 
-    /* Tap hint (fades after open) */
-    .hint{
-      position:fixed; bottom:14px; left:50%; transform:translateX(-50%);
-      background:rgba(255,255,255,.72); color:#3b2f58; font-weight:700; font-size:13px;
-      padding:8px 12px; border-radius:999px; box-shadow:var(--shadow); z-index:7
+    /* Felső, lekerekített modal – feladatleírás */
+    .modal-backdrop{
+      position:fixed; inset:0; display:grid; place-items:center; background:#0008; z-index:50; opacity:0; pointer-events:none; transition:opacity .25s;
     }
-    .hint.fade{ animation: hintout 1.2s forwards .6s }
-    @keyframes hintout{ to{ opacity:0; transform:translateX(-50%) translateY(8px) } }
+    .modal-backdrop.show{opacity:1; pointer-events:auto;}
+    .modal-card{
+      width:min(92vw,520px); background:#1a1b39; color:#fff; border-radius:18px; box-shadow:0 20px 60px #0007; padding:18px 16px 14px;
+      border:1px solid #ffffff14;
+    }
+    .modal-card h2{margin:6px 0 8px; font-size:clamp(18px,5vw,22px)}
+    .modal-card p{margin:0 0 12px; color:#cdd1ffcc; line-height:1.4}
+    .modal-actions{display:flex; justify-content:flex-end; gap:10px}
+    .btn{
+      appearance:none; border:0; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer;
+      background:linear-gradient(180deg, #ff69a6, #ff3f8c); color:#fff; box-shadow:0 8px 20px rgba(255,63,140,.35);
+    }
+    .btn.secondary{background:#ffffff12; color:#fff; box-shadow:none}
+    .shake{animation:shake .5s}
+    @keyframes shake{10%{transform:translateX(-2px)} 20%{transform:translateX(2px)} 30%{transform:translateX(-2px)} 40%{transform:translateX(2px)}}
+
+    /* statikus konfetti a doboz alján – változatlan */
+    .static-confetti{
+      position:absolute; bottom:8%; left:50%; transform:translateX(-50%);
+      width:min(68vw,360px); display:flex; flex-wrap:wrap; gap:6px 10px; justify-content:center; pointer-events:none; z-index:6; padding:4px 0;
+    }
+    .static-confetti span{width:8px;height:8px;border-radius:2px;display:block;opacity:0.9;transform:rotate(15deg);}
   </style>
 </head>
 <body>
-  <div class="title">
-    Boldog születésnapot Andi! 🎂✨
-    <div class="sub">Koppints a dobozra!</div>
-  </div>
+  <!-- Háttér effektek: tűzijáték + konfetti -->
+  <canvas id="fireworks" class="fx"></canvas>
+  <canvas id="confetti" class="fx"></canvas>
 
-  <canvas id="fx"></canvas>
-  <div class="stage" id="stage">
-    <!-- Balloons added dynamically -->
-
-    <!-- Gift -->
-    <div id="gift" aria-label="Ajándékdoboz" role="button">
-      <div class="lid"></div>
-      <div class="bow"></div>
-      <div class="box">
-        <div class="ribbon-vert"></div>
+  <!-- Feladat-ismertető modal -->
+  <div id="taskModal" class="modal-backdrop show">
+    <div class="modal-card">
+      <h2>🎈 Mini játék</h2>
+      <p>Kattints a repkedő lufikra! Minden lufiból előbukkan egy betű a „<b>Boldog születésnapot</b>” feliratból.<br>
+      A betű a helyére repül, és ha a teljes szöveg összeáll, <b>kinyithatod az ajándékdobozt.</b></p>
+      <div class="modal-actions">
+        <button class="btn" id="okBtn">Mehet!</button>
       </div>
     </div>
+  </div>
 
-    <!-- Coupons (appear after open) -->
-    <div id="coupons" class="hidden" aria-live="polite">
-      <button class="coupon" id="coupon-matcha">
-        <div class="em">🍵</div>
-        <h3>Matcha teázás</h3>
-        <p>Pihenős, illatos <span class="tag">kupon</span></p>
-      </button>
-      <button class="coupon" id="coupon-photo">
-        <div class="em">📸</div>
-        <h3>Közös fotózás</h3>
-        <p>Emlékgyűjtő <span class="tag">kupon</span></p>
-      </button>
+  <div class="stage">
+    <h1><span id="assembled"></span>, <span class="name">Andi</span> 🎉</h1>
+
+    <div class="scene">
+      <div class="deck">
+        <div id="gift" aria-label="Ajándékdoboz (koppints a nyitáshoz)" role="button">
+          <div class="lid"></div>
+          <div class="box"></div>
+          <div class="glow"></div>
+
+          <!-- Ajándék kártyák (változatlan) -->
+          <div class="cards">
+            <div class="card"><div><b>Ajándék kupon</b>matcha teázás<br>🍵</div></div>
+            <div class="card"><div><b>Ajándék kupon</b>IKONO belépő<br>📸</div></div>
+          </div>
+
+          <!-- Lufik (JS tölti fel a betűk alapján) -->
+          <div class="balloons" aria-hidden="true" id="balloons"></div>
+        </div>
+        <div class="shadow"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Overlay for enlarged coupon -->
-  <div id="overlay" class="overlay hidden" aria-hidden="true">
-    <div class="big" id="bigCoupon">
-      <button class="close" id="closeBig" aria-label="Bezárás">✕</button>
-      <div class="em" id="bigEm">🎁</div>
-      <h2 id="bigTitle">Kupon</h2>
-      <p id="bigText">Koppints az ✕ gombra a visszalépéshez.</p>
-    </div>
-  </div>
-
-  <div class="hint" id="hint">Bökdösd meg a lufikat – odébb repülnek! 🎈</div>
+  <div class="hint">Feladat: rakd ki a „Boldog születésnapot” szöveget a lufikból! 🎈</div>
 
   <script>
-  (function(){
-    const stage = document.getElementById('stage');
-    const gift  = document.getElementById('gift');
-    const lid   = gift.querySelector('.lid');
-    const couponsWrap = document.getElementById('coupons');
-    const couponMatcha = document.getElementById('coupon-matcha');
-    const couponPhoto  = document.getElementById('coupon-photo');
-    const overlay = document.getElementById('overlay');
-    const closeBig = document.getElementById('closeBig');
-    const bigEm = document.getElementById('bigEm');
-    const bigTitle = document.getElementById('bigTitle');
-    const bigText = document.getElementById('bigText');
-    const hint = document.getElementById('hint');
-    const fxCanvas = document.getElementById('fx');
-    const ctx = fxCanvas.getContext('2d');
+  /* ======== CÍMSOR KIRAKÓS (betűhelyek) ======== */
+  const targetText = "Boldog születésnapot";
+  const assembled = document.getElementById('assembled');
+  const slots = [];
+  for(const ch of targetText){
+    const span = document.createElement('span');
+    span.className = 'letter-slot' + (ch === ' ' ? ' space' : '');
+    span.dataset.expected = ch;
+    span.textContent = ch === ' ' ? '' : ' ';
+    assembled.appendChild(span);
+    slots.push(span);
+  }
+  let filledCount = 0, totalLetters = targetText.replace(/\s/g,'').length;
+  function isPuzzleComplete(){ return filledCount >= totalLetters; }
 
-    let opened = false;
-
-    /* Resize canvas */
-    function resize(){
-      fxCanvas.width = window.innerWidth * devicePixelRatio;
-      fxCanvas.height = window.innerHeight * devicePixelRatio;
-      ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  /* ======== Ajándék doboz nyitás blokkolása, amíg nincs kész ======== */
+  const gift = document.getElementById('gift');
+  let opened = false;
+  gift.addEventListener('click', (e) => {
+    if (e.target.classList.contains('balloon')) return;
+    if (!isPuzzleComplete()){
+      gift.classList.add('shake'); setTimeout(()=>gift.classList.remove('shake'), 500);
+      return; // nem nyitható még
     }
-    window.addEventListener('resize', resize,{passive:true});
-    resize();
-
-    /* -------- Gift open → coupons + FX -------- */
-    gift.addEventListener('click', () => {
-      if (opened) return;
+    if (!opened){
       opened = true;
       gift.classList.add('open');
-      setTimeout(()=> gift.classList.add('fall'), 320);
+      startFireworks(5600);
+      burstConfetti(180);
+      setTimeout(()=>burstConfetti(80),900);
+      setTimeout(()=>burstConfetti(80),1800);
+    } else {
+      burstConfetti(30);
+    }
+  }, {passive:true});
 
-      // show coupons
-      couponsWrap.classList.remove('hidden');
-      setTimeout(()=> {
-        couponMatcha.classList.add('show');
-        couponPhoto.classList.add('show');
-      }, 40);
+  /* ======== LUFIK: létrehozás (egy lufi = egy betű, véletlen induló pozíciók) ======== */
+  const balloonsWrap = document.getElementById('balloons');
+  const colors = ['#ff7aa2','#6ee7ff','#ffd166','#a3ff9b','#c084fc','#f472b6','#22d3ee'];
+  const letters = targetText.replace(/\s/g,'').split('');
+  const balloonState = [];
 
-      // confetti rain + fireworks bursts
-      confettiRain();
-      fireworkBurstRandom(4);
+  function rand(min,max){ return Math.random()*(max-min)+min; }
 
-      // hide hint later
-      hint.classList.add('fade');
-      setTimeout(()=>hint.remove(), 2000);
-    }, {passive:true});
+  letters.forEach((letter,i)=>{
+    const b = document.createElement('div');
+    b.className = 'balloon';
+    b.style.setProperty('--col', colors[i % colors.length]);
+    // szórjuk szét a képernyőn
+    const x = rand(10, innerWidth - 70);
+    const y = rand(60, innerHeight - 200);
+    b.style.left = x+'px';
+    b.style.top  = y+'px';
+    b.dataset.letter = letter;
+    const shine = document.createElement('div'); shine.className='shine'; b.appendChild(shine);
+    balloonsWrap.appendChild(b);
 
-    /* -------- Coupon overlay -------- */
-    function openCoupon(type){
-      overlay.classList.remove('hidden');
-      overlay.setAttribute('aria-hidden','false');
-      if(type==='matcha'){
-        bigEm.textContent = '🍵';
-        bigTitle.textContent = 'Matcha teázás – kupon';
-        bigText.textContent = 'Egy közös, nyugis matcha tea alkalom. Időpont egyeztetés: személyesen. 😊';
-      }else{
-        bigEm.textContent = '📸';
-        bigTitle.textContent = 'Közös fotózás – kupon';
-        bigText.textContent = 'Közös fotózós délután, sok nevetéssel és kedvenc helyeinkkel. 📍';
+    balloonState.push({
+      el:b, x, y,
+      vx: rand(-1.2,1.2), vy: rand(-1.0,1.0),
+      ax:0, ay:0,
+      nextTurnAt: performance.now() + rand(300,900)
+    });
+  });
+
+  /* ======== LUFIK MOZGÁSA: gyors irányváltások, pattogás a széleken ======== */
+  const LEFT_WALL = 0, TOP_WALL = 0;
+  function motionLoop(ts){
+    const RIGHT_WALL = innerWidth, BOTTOM_WALL = innerHeight;
+    for(const b of balloonState){
+      // időnként hirtelen új irány
+      if(ts >= b.nextTurnAt){
+        const speed = rand(0.8, 1.8);
+        const angle = rand(0, Math.PI*2);
+        b.vx = Math.cos(angle)*speed;
+        b.vy = Math.sin(angle)*speed;
+        b.nextTurnAt = ts + rand(280, 800);
+      }
+      // mozgás
+      b.x += b.vx;
+      b.y += b.vy;
+
+      // falak: pattogás + kis véletlen turbó
+      if(b.x < LEFT_WALL){ b.x = LEFT_WALL; b.vx = Math.abs(b.vx)*0.9; }
+      if(b.x + b.el.offsetWidth > RIGHT_WALL){ b.x = RIGHT_WALL - b.el.offsetWidth; b.vx = -Math.abs(b.vx)*0.9; }
+      if(b.y < TOP_WALL+40){ b.y = TOP_WALL+40; b.vy = Math.abs(b.vy)*0.9; }
+      if(b.y + b.el.offsetHeight > BOTTOM_WALL-40){ b.y = BOTTOM_WALL - 40 - b.el.offsetHeight; b.vy = -Math.abs(b.vy)*0.9; }
+
+      b.el.style.transform = `translate(${Math.round(b.x - parseFloat(b.el.style.left))}px, ${Math.round(b.y - parseFloat(b.el.style.top))}px)`;
+    }
+    requestAnimationFrame(motionLoop);
+  }
+  requestAnimationFrame(motionLoop);
+
+  /* ======== LUFIK KATTINTÁS: „pukkanás” + betű berepül a helyére ======== */
+  function flyLetterToSlot(ch, fromX, fromY){
+    // keressük meg az első még üres megfelelő slotot
+    const target = slots.find(s => !s.classList.contains('filled') && s.dataset.expected === ch);
+    if(!target) return; // safety
+    // képernyő koordináták
+    const tRect = target.getBoundingClientRect();
+    const fly = document.createElement('div');
+    fly.className='fly-letter';
+    fly.textContent = ch;
+    document.body.appendChild(fly);
+    fly.style.transform = `translate(${fromX}px, ${fromY}px)`;
+    // Force layout, majd célra animál
+    requestAnimationFrame(()=>{
+      const destX = tRect.left + tRect.width/2;
+      const destY = tRect.top + tRect.height/2;
+      fly.style.transform = `translate(${destX}px, ${destY}px)`;
+      fly.style.opacity = '0.9';
+      fly.addEventListener('transitionend', ()=>{
+        target.textContent = ch;
+        target.classList.add('filled');
+        filledCount++;
+        fly.remove();
+        if(isPuzzleComplete()){
+          // kis felirat, hogy nyitható
+          const hint = document.querySelector('.hint');
+          hint.textContent = 'Kész! Most már kinyithatod a dobozt 🎁';
+          burstConfetti(120);
+        }
+      }, {once:true});
+    });
+  }
+
+  balloonsWrap.addEventListener('click', (e)=>{
+    const bEl = e.target.closest('.balloon');
+    if(!bEl) return;
+    const letter = bEl.dataset.letter;
+    const rect = bEl.getBoundingClientRect();
+    // repülő betű
+    flyLetterToSlot(letter, rect.left+rect.width/2, rect.top+rect.height/2);
+    // pukkanás + konfetti
+    bEl.classList.add('popped');
+    burstConfetti(28, rect.left+rect.width/2, rect.top+rect.height/2);
+    setTimeout(()=>bEl.remove(), 260);
+  }, {passive:true});
+
+  /* ======== MODAL gombok ======== */
+  const modal = document.getElementById('taskModal');
+  document.getElementById('okBtn').addEventListener('click', ()=> modal.classList.remove('show'));
+  document.getElementById('laterBtn').addEventListener('click', ()=> modal.classList.remove('show'));
+
+  /* ======== TŰZIJÁTÉK ======== */
+  const fwCanvas = document.getElementById('fireworks');
+  const fctx = fwCanvas.getContext('2d');
+  let fwRunning = true;
+  function resizeCanvases(){
+    [fwCanvas, confettiCanvas].forEach(c=>{c.width=innerWidth*devicePixelRatio; c.height=innerHeight*devicePixelRatio});
+  }
+  window.addEventListener('resize', resizeCanvases);
+
+  class Spark{
+    constructor(x,y,angle,speed,color){
+      this.x=x; this.y=y; this.vx=Math.cos(angle)*speed; this.vy=Math.sin(angle)*speed; this.alpha=1; this.life=60 + Math.random()*20; this.color=color;
+    }
+    step(){ this.life--; this.x+=this.vx; this.y+=this.vy; this.vy+=0.03; this.alpha = Math.max(0, this.life/80); }
+    draw(ctx){ ctx.globalAlpha = this.alpha; ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, 2.2*devicePixelRatio, 0, Math.PI*2); ctx.fill(); }
+  }
+  const fireworks=[];
+  function launchFirework(){
+    const x = (Math.random()*0.7 + 0.15) * fwCanvas.width;
+    const y = (Math.random()*0.25 + 0.15) * fwCanvas.height;
+    const hue = Math.floor(Math.random()*360);
+    const color = `hsl(${hue} 100% 70%)`;
+    for(let i=0;i<80;i++){
+      const ang = (i/80)*Math.PI*2 + Math.random()*0.05;
+      const spd = (Math.random()*2+1.8)*devicePixelRatio*1.1;
+      fireworks.push(new Spark(x,y,ang,spd,color));
+    }
+  }
+  let fwTimer = 0;
+  function fwLoop(){
+    if(!fwRunning) return;
+    requestAnimationFrame(fwLoop);
+    fctx.clearRect(0,0,fwCanvas.width, fwCanvas.height);
+    fwTimer++;
+    if (fwTimer % 42 === 0) launchFirework();
+    for(let i=fireworks.length-1;i>=0;i--){
+      const s = fireworks[i]; s.step(); s.draw(fctx); if(s.life<=0) fireworks.splice(i,1);
+    }
+  }
+  function startFireworks(ms=5000){
+    fwRunning = true; const endAt = performance.now()+ms;
+    const tick = () => { if(performance.now()<endAt){ fwRunning = true; requestAnimationFrame(tick); } else { fwRunning=false; } };
+    launchFirework(); launchFirework();
+    fwLoop(); tick();
+  }
+
+  /* ======== KONFETTI – folyamatos esés (meghagyva a korábbi verziót) ======== */
+  const confettiCanvas = document.getElementById('confetti');
+  const cctx = confettiCanvas.getContext('2d');
+  const bits=[];
+  class Bit{
+    constructor(x,y){
+      this.x=x; this.y=y;
+      this.size=(4+Math.random()*6)*devicePixelRatio;
+      this.vx=(Math.random()-0.5)*0.8;
+      this.vy=(0.8+Math.random()*1.8)*devicePixelRatio;
+      this.rot=Math.random()*Math.PI*2;
+      this.vr=(Math.random()-0.5)*0.2;
+      this.color=`hsl(${Math.floor(Math.random()*360)} 100% 65%)`;
+      this.life=400+Math.random()*200;
+    }
+    step(){
+      this.life--; this.x+=this.vx; this.y+=this.vy; this.vy+=0.01*devicePixelRatio; this.rot+=this.vr;
+      if(this.y > confettiCanvas.height + 10*devicePixelRatio){
+        this.y = -10*devicePixelRatio; this.x = Math.random()*confettiCanvas.width; this.vy = (0.8+Math.random()*1.8)*devicePixelRatio;
       }
     }
-    function closeCoupon(){
-      overlay.classList.add('hidden');
-      overlay.setAttribute('aria-hidden','true');
-    }
-    couponMatcha.addEventListener('click', ()=>openCoupon('matcha'));
-    couponPhoto.addEventListener('click', ()=>openCoupon('photo'));
-    closeBig.addEventListener('click', closeCoupon);
-    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeCoupon(); });
-
-    /* -------- Confetti bits (DOM) + fireworks (canvas) -------- */
-    function confettiRain(){
-      const colors = ['#ff6ec7','#ffd166','#8a5cff','#22c55e','#38bdf8','#ff9f1c'];
-      const count = 140;
-      const giftBox = gift.getBoundingClientRect();
-      for(let i=0;i<count;i++){
-        const bit = document.createElement('div');
-        bit.className = 'confetti-bit';
-        bit.style.background = colors[(Math.random()*colors.length)|0];
-        bit.style.left = (giftBox.left + giftBox.width/2 + (Math.random()*120 - 60)) + 'px';
-        bit.style.top  = (giftBox.top - 10 + Math.random()*40) + 'px';
-        bit.style.transform = `translateY(0) rotate(${(Math.random()*180)|0}deg)`;
-        bit.style.width = (8 + Math.random()*8)+'px';
-        bit.style.height= (10 + Math.random()*10)+'px';
-        bit.style.animationDelay = (Math.random()*0.6)+'s';
-        document.body.appendChild(bit);
-        setTimeout(()=>bit.remove(), 4200);
+    draw(ctx){ ctx.save(); ctx.translate(this.x,this.y); ctx.rotate(this.rot); ctx.fillStyle=this.color; ctx.fillRect(-this.size/2,-this.size/2,this.size,this.size*0.6); ctx.restore(); }
+  }
+  function confettiLoop(){
+    requestAnimationFrame(confettiLoop);
+    const targetCount = Math.min(300, Math.floor((innerWidth*innerHeight)/8000));
+    if(bits.length < targetCount){
+      const need = targetCount - bits.length;
+      for(let i=0;i<need;i++){
+        const x = Math.random()*confettiCanvas.width;
+        const y = Math.random()*(-confettiCanvas.height*0.3);
+        bits.push(new Bit(x,y));
       }
     }
-
-    // Simple fireworks particles
-    const fwParticles = [];
-    function burst(x,y, n=36, speed=4){
-      const cols = ['#ff6ec7','#ffd166','#8a5cff','#22c55e','#38bdf8','#ff9f1c','#ffffff'];
-      for(let i=0;i<n;i++){
-        const ang = (i/n)*Math.PI*2 + (Math.random()*0.3);
-        const v = speed*(0.7+Math.random()*0.6);
-        fwParticles.push({
-          x, y, vx: Math.cos(ang)*v, vy: Math.sin(ang)*v,
-          life: 60 + Math.random()*20,
-          color: cols[(Math.random()*cols.length)|0],
-          size: 2 + Math.random()*2
-        });
-      }
+    cctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+    for(let i=0;i<bits.length;i++){ const b = bits[i]; b.step(); b.draw(cctx); }
+  }
+  function burstConfetti(n=60, sx, sy){
+    const x = (sx!==undefined? sx : innerWidth/2) * devicePixelRatio;
+    const y = (sy!==undefined? sy : innerHeight*0.2) * devicePixelRatio;
+    for(let i=0;i<n;i++){
+      const b = new Bit(x + (Math.random()-0.5)*40*devicePixelRatio, y + (Math.random()-0.5)*20*devicePixelRatio);
+      b.vx += (Math.random()-0.5)*2; b.vy = Math.abs(b.vy) + Math.random()*2*devicePixelRatio; bits.push(b);
     }
-    function fireworkBurstRandom(rounds=3){
-      const W = window.innerWidth, H = window.innerHeight;
-      for(let r=0;r<rounds;r++){
-        setTimeout(()=>{
-          const x = 60 + Math.random()*(W-120);
-          const y = 60 + Math.random()*(H*0.4);
-          burst(x,y, 36+((Math.random()*16)|0), 3.5+Math.random()*1.8);
-        }, r*420);
-      }
-    }
-    function fxLoop(){
-      // clear with slight fade for trails
-      ctx.fillStyle = 'rgba(0,0,0,0.12)';
-      ctx.globalCompositeOperation = 'destination-in';
-      ctx.fillRect(0,0,fxCanvas.width/devicePixelRatio, fxCanvas.height/devicePixelRatio);
-      ctx.globalCompositeOperation = 'lighter';
+  }
 
-      // draw particles
-      for(let i=fwParticles.length-1; i>=0; i--){
-        const p = fwParticles[i];
-        p.x += p.vx; p.y += p.vy;
-        p.vy += 0.04; // gravity
-        p.vx *= 0.99; p.vy *= 0.99;
-        p.life -= 1;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-        ctx.fillStyle = p.color;
-        ctx.fill();
-        if(p.life<=0) fwParticles.splice(i,1);
-      }
-      requestAnimationFrame(fxLoop);
-    }
-    fxLoop();
-
-    /* -------- Balloons with simple physics -------- */
-    const balloonColors = ['#ff6ec7','#ffd166','#8a5cff','#22c55e','#38bdf8','#f97316','#22d3ee','#eab308'];
-    const balloons = [];
-    const N_BALLOONS = 9;
-
-    function spawnBalloons(){
-      const W = window.innerWidth, H = window.innerHeight;
-      for(let i=0;i<N_BALLOONS;i++){
-        const b = document.createElement('div');
-        b.className='balloon';
-        const c = balloonColors[(Math.random()*balloonColors.length)|0];
-        b.style.background = `radial-gradient(circle at 30% 30%, #fff 0 15%, ${c} 45%, ${shade(c,-20)} 100%)`;
-        b.innerHTML = '<div class="shine"></div>';
-        stage.appendChild(b);
-        const x = Math.random()*W*0.9 + W*0.05;
-        const y = Math.random()*H*0.4 + H*0.05;
-        const vx = (Math.random()-.5)*0.8;
-        const vy = - (0.3 + Math.random()*0.4);
-        balloons.push({el:b, x, y, vx, vy, w:b.offsetWidth, h:b.offsetHeight});
-        b.style.left = (x - b.offsetWidth/2)+'px';
-        b.style.top  = (y - b.offsetHeight/2)+'px';
-
-        b.addEventListener('pointerdown', (e)=>{
-          e.preventDefault();
-          const rect = b.getBoundingClientRect();
-          const cx = rect.left + rect.width/2;
-          const cy = rect.top + rect.height/2;
-          const dx = (cx - e.clientX);
-          const dy = (cy - e.clientY);
-          const mag = Math.hypot(dx,dy) || 1;
-          const push = 5.5;
-          let bb = balloons[i];
-          bb.vx += (dx/mag)*push;
-          bb.vy += (dy/mag)*push*0.8;
-        }, {passive:false});
-      }
-    }
-    function shade(hex, amt){
-      // #rrggbb → shade by amt (-100..100)
-      const c = hex.replace('#','');
-      const num = parseInt(c,16);
-      let r = (num>>16)+amt, g = (num>>8 & 0x00FF)+amt, b = (num & 0x0000FF)+amt;
-      r = Math.max(0,Math.min(255,r)); g = Math.max(0,Math.min(255,g)); b = Math.max(0,Math.min(255,b));
-      return '#'+(r<<16|g<<8|b).toString(16).padStart(6,'0');
-    }
-    function balloonLoop(){
-      const W = window.innerWidth, H = window.innerHeight;
-      for(const b of balloons){
-        // gentle float up + wind
-        b.vy -= 0.002; // buoyancy
-        b.vx += Math.sin(Date.now()/1000 + b.x*0.01)*0.0006;
-
-        b.x += b.vx; b.y += b.vy;
-        // damping
-        b.vx *= 0.995; b.vy *= 0.995;
-
-        // bounds bounce
-        const left = b.w/2, right = W - b.w/2, top = b.h/2, bottom = H - b.h/2;
-        if(b.x<left){ b.x=left; b.vx = Math.abs(b.vx)*0.7 }
-        if(b.x>right){ b.x=right; b.vx = -Math.abs(b.vx)*0.7 }
-        if(b.y<top){ b.y=top; b.vy = Math.abs(b.vy)*0.4 }
-        if(b.y>bottom){ b.y=bottom; b.vy = -Math.abs(b.vy)*0.6 }
-
-        b.el.style.transform = `translate(${b.x - b.w/2}px, ${b.y - b.h/2}px)`;
-      }
-      requestAnimationFrame(balloonLoop);
-    }
-    spawnBalloons();
-    balloonLoop();
-
-    /* Prevent pull-to-refresh on aggressive drags (Android) */
-    document.addEventListener('touchmove', (e)=>{
-      if(e.touches.length>1) return;
-      e.preventDefault();
-    }, {passive:false});
-
-    /* Accessibility: keyboard open (desktop) */
-    gift.tabIndex = 0;
-    gift.addEventListener('keydown',(e)=>{ if(e.key==='Enter' || e.key===' ') gift.click(); });
-
-  })();
+  // ======== Init ========
+  resizeCanvases();
+  confettiLoop();
   </script>
-
-  <!--
-    GitHub Pages használat:
-    1) Ezt a fájlt mentsd 'index.html' néven a repo gyökerébe.
-    2) Commit & push.
-    3) Repo → Settings → Pages → Source: 'Deploy from a branch' → main branch / root.
-    4) Várj pár másodpercet, és megnyílik a webes URL.
-  -->
 </body>
 </html>
