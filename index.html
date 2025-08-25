@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Boldog születésnapot Andi! 🎉</title>
+  <meta name="description" content="Ajándékdoboz kuponokkal – Boldog születésnapot Andi!">
+  <style>
+    :root{
+      --bg1:#fdf3ff; --bg2:#ffeef7;
+      --pink:#ff4da6; --vio:#8a5cff; --gold:#ffd166; --mint:#22c55e; --sky:#38bdf8;
+      --shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+    *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 50% 20%, var(--bg2), var(--bg1));
+      overflow:hidden; touch-action:manipulation;
+    }
+
+    /* Header */
+    .title{
+      position:fixed; top:12px; left:0; right:0; text-align:center; z-index:5;
+      font-weight:800; letter-spacing:.3px; color:#4b3b6a;
+      text-shadow:0 2px 0 #fff, 0 6px 18px rgba(0,0,0,.12);
+      padding:8px 12px; font-size: clamp(18px, 4.8vw, 36px);
+    }
+    .sub{ font-weight:600; color:#7a6c9b; font-size: clamp(12px, 2.8vw, 16px)}
+
+    /* Stage */
+    .stage{
+      position:relative; width:100vw; height:100vh; overflow:hidden;
+      display:grid; place-items:center; padding-top:40px;
+    }
+
+    /* Gift box */
+    #gift{
+      position:relative; width:min(68vw, 340px); height:min(54vw, 270px);
+      animation: float 3.6s ease-in-out infinite;
+      z-index:3;
+    }
+    @keyframes float{
+      0%,100%{ transform: translateY(0) rotate(0deg) }
+      50%{ transform: translateY(-6px) rotate(-.6deg) }
+    }
+    .box{
+      position:absolute; inset:auto 0 0 0; height:70%;
+      margin:auto; width:100%;
+      background:
+        linear-gradient(90deg, #ff9ad1 0 18%, #ffd6ea 18% 20%, #ff9ad1 20% 80%, #ffd6ea 80% 82%, #ff9ad1 82% 100%);
+      border-radius:16px; box-shadow:var(--shadow);
+      border:3px solid #ffb8dc;
+    }
+    .ribbon-vert{
+      position:absolute; top:0; bottom:0; left:50%; width:16%;
+      transform:translateX(-50%);
+      background: linear-gradient(#ffd6ea, #ff8cc8);
+      filter:saturate(1.1);
+      border-radius:12px;
+    }
+    .lid{
+      position:absolute; top:-22%; left:50%; transform:translateX(-50%);
+      width:110%; height:36%;
+      background:
+        linear-gradient(90deg, #ff7fbe 0 18%, #ffe0ef 18% 20%, #ff7fbe 20% 80%, #ffe0ef 80% 82%, #ff7fbe 82% 100%);
+      border-radius:18px; box-shadow:var(--shadow);
+      border:3px solid #ffb8dc;
+      transform-origin: 50% 120%;
+      transition: transform .6s cubic-bezier(.22,1,.36,1), top .6s cubic-bezier(.22,1,.36,1);
+    }
+    .bow{
+      position:absolute; top:-18px; left:50%; transform:translateX(-50%);
+      width:120px; height:70px;
+      background: radial-gradient(circle at 30% 50%, #fff, #ffd6ea 60%);
+      border-radius:60px/40px;
+      box-shadow: inset 0 10px 18px rgba(255,0,120,.15), 0 6px 16px rgba(0,0,0,.1);
+    }
+    .bow:before, .bow:after{
+      content:""; position:absolute; top:10px; width:72px; height:48px;
+      background: radial-gradient(circle at 35% 50%, #ffb3d8, #ff79bd 70%);
+      border-radius:50px 50px 10px 50px;
+      box-shadow: inset 0 10px 14px rgba(255,255,255,.35);
+    }
+    .bow:before{ left:-62px; transform:rotate(-16deg) }
+    .bow:after{ right:-62px; transform:scaleX(-1) rotate(-16deg) }
+    /* open state */
+    #gift.open .lid{ transform:translateX(-50%) rotate(-18deg); top:-48% }
+    #gift.fall .lid{ animation: lidFall 1.4s .5s forwards cubic-bezier(.2,.9,.1,1.1) }
+    @keyframes lidFall{
+      0%{ transform:translateX(-50%) rotate(-18deg); top:-48% }
+      60%{ transform:translate(-60%, 80%) rotate(22deg) }
+      100%{ transform:translate(-80%, 180%) rotate(34deg) }
+    }
+
+    /* Coupons */
+    #coupons{
+      position:absolute; inset:0; display:flex; gap:min(4vw,16px);
+      align-items:flex-end; justify-content:center; pointer-events:none; z-index:2;
+    }
+    .coupon{
+      pointer-events:auto;
+      width:min(46vw, 240px); aspect-ratio: 1.4/1;
+      background:#fff; border:2px dashed #d2c4ff; border-radius:20px;
+      box-shadow: var(--shadow);
+      display:flex; flex-direction:column; justify-content:center; align-items:center;
+      transform: translateY(40%) scale(.9); opacity:0;
+    }
+    .coupon.show{ animation: rise .8s forwards cubic-bezier(.22,1,.36,1)}
+    .coupon:nth-child(1).show{ animation-delay:.1s }
+    .coupon:nth-child(2).show{ animation-delay:.22s }
+    @keyframes rise{
+      from{ transform: translateY(40%) scale(.9); opacity:0 }
+      to{ transform: translateY(-14%) scale(1); opacity:1 }
+    }
+    .coupon .em{ font-size: clamp(26px, 10vw, 40px); line-height:1; margin-bottom:6px }
+    .coupon h3{ margin:0 0 6px; font-size: clamp(14px, 4.6vw, 18px); color:#4b3b6a }
+    .coupon p{ margin:0; font-size: clamp(12px, 3.6vw, 14px); color:#6b5a8e }
+    .coupon:hover{ transform: translateY(-16%) scale(1.03) }
+    .hidden{ display:none }
+
+    /* Coupon overlay */
+    .overlay{
+      position:fixed; inset:0; background:rgba(10,8,25,.5);
+      display:grid; place-items:center; z-index:6; backdrop-filter: blur(3px);
+    }
+    .overlay .big{
+      width:min(92vw, 480px); background:#fff; border-radius:22px; border:3px dashed #c7b8ff;
+      box-shadow: 0 18px 60px rgba(0,0,0,.35); padding:20px 18px 16px; position:relative;
+      animation: pop .25s ease-out;
+    }
+    @keyframes pop{from{transform:scale(.92); opacity:.6}to{transform:scale(1); opacity:1}}
+    .close{
+      position:absolute; right:10px; top:8px; border:none; background:#f3edff; color:#6b5a8e;
+      border-radius:999px; width:36px; height:36px; font-size:18px; cursor:pointer;
+      box-shadow:0 2px 10px rgba(0,0,0,.1)
+    }
+    .big .em{ font-size:46px; margin:6px 0 2px }
+    .big h2{ margin:4px 0 8px; font-size:22px; color:#3b2f58 }
+    .big p{ margin:0 0 8px; color:#584b7b; line-height:1.4; font-size:15px; text-align:center }
+    .tag{ display:inline-block; padding:4px 10px; background:#f6f0ff; color:#6b5a8e; border-radius:12px; font-size:12px; }
+
+    /* Balloons */
+    .balloon{
+      position:absolute; width: clamp(38px, 14vw, 80px); height: clamp(48px, 18vw, 110px);
+      border-radius:50% 50% 45% 45%; box-shadow: inset 0 -12px 24px rgba(0,0,0,.12), var(--shadow);
+      cursor:pointer; touch-action:none; z-index:1;
+    }
+    .balloon:after{
+      content:""; position:absolute; left:50%; bottom:-36%;
+      width:2px; height:38%; background:rgba(0,0,0,.18); transform:translateX(-50%); border-radius:2px;
+    }
+    .balloon .shine{
+      position:absolute; top:10%; left:18%; width:22%; height:30%; border-radius:100px;
+      background:rgba(255,255,255,.55); filter:blur(1px);
+    }
+
+    /* Confetti / fireworks canvas */
+    #fx{ position:fixed; inset:0; pointer-events:none; z-index:4 }
+
+    /* Tiny confetti bg bits */
+    .confetti-bit{
+      position:absolute; width:10px; height:14px; opacity:.9;
+      animation: fall 3.8s linear forwards;
+    }
+    @keyframes fall{
+      to{ transform: translateY(110vh) rotate(540deg); opacity:.2 }
+    }
+
+    /* Tap hint (fades after open) */
+    .hint{
+      position:fixed; bottom:14px; left:50%; transform:translateX(-50%);
+      background:rgba(255,255,255,.72); color:#3b2f58; font-weight:700; font-size:13px;
+      padding:8px 12px; border-radius:999px; box-shadow:var(--shadow); z-index:7
+    }
+    .hint.fade{ animation: hintout 1.2s forwards .6s }
+    @keyframes hintout{ to{ opacity:0; transform:translateX(-50%) translateY(8px) } }
+  </style>
+</head>
+<body>
+  <div class="title">
+    Boldog születésnapot Andi! 🎂✨
+    <div class="sub">Koppints a dobozra!</div>
+  </div>
+
+  <canvas id="fx"></canvas>
+  <div class="stage" id="stage">
+    <!-- Balloons added dynamically -->
+
+    <!-- Gift -->
+    <div id="gift" aria-label="Ajándékdoboz" role="button">
+      <div class="lid"></div>
+      <div class="bow"></div>
+      <div class="box">
+        <div class="ribbon-vert"></div>
+      </div>
+    </div>
+
+    <!-- Coupons (appear after open) -->
+    <div id="coupons" class="hidden" aria-live="polite">
+      <button class="coupon" id="coupon-matcha">
+        <div class="em">🍵</div>
+        <h3>Matcha teázás</h3>
+        <p>Pihenős, illatos <span class="tag">kupon</span></p>
+      </button>
+      <button class="coupon" id="coupon-photo">
+        <div class="em">📸</div>
+        <h3>Közös fotózás</h3>
+        <p>Emlékgyűjtő <span class="tag">kupon</span></p>
+      </button>
+    </div>
+  </div>
+
+  <!-- Overlay for enlarged coupon -->
+  <div id="overlay" class="overlay hidden" aria-hidden="true">
+    <div class="big" id="bigCoupon">
+      <button class="close" id="closeBig" aria-label="Bezárás">✕</button>
+      <div class="em" id="bigEm">🎁</div>
+      <h2 id="bigTitle">Kupon</h2>
+      <p id="bigText">Koppints az ✕ gombra a visszalépéshez.</p>
+    </div>
+  </div>
+
+  <div class="hint" id="hint">Bökdösd meg a lufikat – odébb repülnek! 🎈</div>
+
+  <script>
+  (function(){
+    const stage = document.getElementById('stage');
+    const gift  = document.getElementById('gift');
+    const lid   = gift.querySelector('.lid');
+    const couponsWrap = document.getElementById('coupons');
+    const couponMatcha = document.getElementById('coupon-matcha');
+    const couponPhoto  = document.getElementById('coupon-photo');
+    const overlay = document.getElementById('overlay');
+    const closeBig = document.getElementById('closeBig');
+    const bigEm = document.getElementById('bigEm');
+    const bigTitle = document.getElementById('bigTitle');
+    const bigText = document.getElementById('bigText');
+    const hint = document.getElementById('hint');
+    const fxCanvas = document.getElementById('fx');
+    const ctx = fxCanvas.getContext('2d');
+
+    let opened = false;
+
+    /* Resize canvas */
+    function resize(){
+      fxCanvas.width = window.innerWidth * devicePixelRatio;
+      fxCanvas.height = window.innerHeight * devicePixelRatio;
+      ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    }
+    window.addEventListener('resize', resize,{passive:true});
+    resize();
+
+    /* -------- Gift open → coupons + FX -------- */
+    gift.addEventListener('click', () => {
+      if (opened) return;
+      opened = true;
+      gift.classList.add('open');
+      setTimeout(()=> gift.classList.add('fall'), 320);
+
+      // show coupons
+      couponsWrap.classList.remove('hidden');
+      setTimeout(()=> {
+        couponMatcha.classList.add('show');
+        couponPhoto.classList.add('show');
+      }, 40);
+
+      // confetti rain + fireworks bursts
+      confettiRain();
+      fireworkBurstRandom(4);
+
+      // hide hint later
+      hint.classList.add('fade');
+      setTimeout(()=>hint.remove(), 2000);
+    }, {passive:true});
+
+    /* -------- Coupon overlay -------- */
+    function openCoupon(type){
+      overlay.classList.remove('hidden');
+      overlay.setAttribute('aria-hidden','false');
+      if(type==='matcha'){
+        bigEm.textContent = '🍵';
+        bigTitle.textContent = 'Matcha teázás – kupon';
+        bigText.textContent = 'Egy közös, nyugis matcha tea alkalom. Időpont egyeztetés: személyesen. 😊';
+      }else{
+        bigEm.textContent = '📸';
+        bigTitle.textContent = 'Közös fotózás – kupon';
+        bigText.textContent = 'Közös fotózós délután, sok nevetéssel és kedvenc helyeinkkel. 📍';
+      }
+    }
+    function closeCoupon(){
+      overlay.classList.add('hidden');
+      overlay.setAttribute('aria-hidden','true');
+    }
+    couponMatcha.addEventListener('click', ()=>openCoupon('matcha'));
+    couponPhoto.addEventListener('click', ()=>openCoupon('photo'));
+    closeBig.addEventListener('click', closeCoupon);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeCoupon(); });
+
+    /* -------- Confetti bits (DOM) + fireworks (canvas) -------- */
+    function confettiRain(){
+      const colors = ['#ff6ec7','#ffd166','#8a5cff','#22c55e','#38bdf8','#ff9f1c'];
+      const count = 140;
+      const giftBox = gift.getBoundingClientRect();
+      for(let i=0;i<count;i++){
+        const bit = document.createElement('div');
+        bit.className = 'confetti-bit';
+        bit.style.background = colors[(Math.random()*colors.length)|0];
+        bit.style.left = (giftBox.left + giftBox.width/2 + (Math.random()*120 - 60)) + 'px';
+        bit.style.top  = (giftBox.top - 10 + Math.random()*40) + 'px';
+        bit.style.transform = `translateY(0) rotate(${(Math.random()*180)|0}deg)`;
+        bit.style.width = (8 + Math.random()*8)+'px';
+        bit.style.height= (10 + Math.random()*10)+'px';
+        bit.style.animationDelay = (Math.random()*0.6)+'s';
+        document.body.appendChild(bit);
+        setTimeout(()=>bit.remove(), 4200);
+      }
+    }
+
+    // Simple fireworks particles
+    const fwParticles = [];
+    function burst(x,y, n=36, speed=4){
+      const cols = ['#ff6ec7','#ffd166','#8a5cff','#22c55e','#38bdf8','#ff9f1c','#ffffff'];
+      for(let i=0;i<n;i++){
+        const ang = (i/n)*Math.PI*2 + (Math.random()*0.3);
+        const v = speed*(0.7+Math.random()*0.6);
+        fwParticles.push({
+          x, y, vx: Math.cos(ang)*v, vy: Math.sin(ang)*v,
+          life: 60 + Math.random()*20,
+          color: cols[(Math.random()*cols.length)|0],
+          size: 2 + Math.random()*2
+        });
+      }
+    }
+    function fireworkBurstRandom(rounds=3){
+      const W = window.innerWidth, H = window.innerHeight;
+      for(let r=0;r<rounds;r++){
+        setTimeout(()=>{
+          const x = 60 + Math.random()*(W-120);
+          const y = 60 + Math.random()*(H*0.4);
+          burst(x,y, 36+((Math.random()*16)|0), 3.5+Math.random()*1.8);
+        }, r*420);
+      }
+    }
+    function fxLoop(){
+      // clear with slight fade for trails
+      ctx.fillStyle = 'rgba(0,0,0,0.12)';
+      ctx.globalCompositeOperation = 'destination-in';
+      ctx.fillRect(0,0,fxCanvas.width/devicePixelRatio, fxCanvas.height/devicePixelRatio);
+      ctx.globalCompositeOperation = 'lighter';
+
+      // draw particles
+      for(let i=fwParticles.length-1; i>=0; i--){
+        const p = fwParticles[i];
+        p.x += p.vx; p.y += p.vy;
+        p.vy += 0.04; // gravity
+        p.vx *= 0.99; p.vy *= 0.99;
+        p.life -= 1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        if(p.life<=0) fwParticles.splice(i,1);
+      }
+      requestAnimationFrame(fxLoop);
+    }
+    fxLoop();
+
+    /* -------- Balloons with simple physics -------- */
+    const balloonColors = ['#ff6ec7','#ffd166','#8a5cff','#22c55e','#38bdf8','#f97316','#22d3ee','#eab308'];
+    const balloons = [];
+    const N_BALLOONS = 9;
+
+    function spawnBalloons(){
+      const W = window.innerWidth, H = window.innerHeight;
+      for(let i=0;i<N_BALLOONS;i++){
+        const b = document.createElement('div');
+        b.className='balloon';
+        const c = balloonColors[(Math.random()*balloonColors.length)|0];
+        b.style.background = `radial-gradient(circle at 30% 30%, #fff 0 15%, ${c} 45%, ${shade(c,-20)} 100%)`;
+        b.innerHTML = '<div class="shine"></div>';
+        stage.appendChild(b);
+        const x = Math.random()*W*0.9 + W*0.05;
+        const y = Math.random()*H*0.4 + H*0.05;
+        const vx = (Math.random()-.5)*0.8;
+        const vy = - (0.3 + Math.random()*0.4);
+        balloons.push({el:b, x, y, vx, vy, w:b.offsetWidth, h:b.offsetHeight});
+        b.style.left = (x - b.offsetWidth/2)+'px';
+        b.style.top  = (y - b.offsetHeight/2)+'px';
+
+        b.addEventListener('pointerdown', (e)=>{
+          e.preventDefault();
+          const rect = b.getBoundingClientRect();
+          const cx = rect.left + rect.width/2;
+          const cy = rect.top + rect.height/2;
+          const dx = (cx - e.clientX);
+          const dy = (cy - e.clientY);
+          const mag = Math.hypot(dx,dy) || 1;
+          const push = 5.5;
+          let bb = balloons[i];
+          bb.vx += (dx/mag)*push;
+          bb.vy += (dy/mag)*push*0.8;
+        }, {passive:false});
+      }
+    }
+    function shade(hex, amt){
+      // #rrggbb → shade by amt (-100..100)
+      const c = hex.replace('#','');
+      const num = parseInt(c,16);
+      let r = (num>>16)+amt, g = (num>>8 & 0x00FF)+amt, b = (num & 0x0000FF)+amt;
+      r = Math.max(0,Math.min(255,r)); g = Math.max(0,Math.min(255,g)); b = Math.max(0,Math.min(255,b));
+      return '#'+(r<<16|g<<8|b).toString(16).padStart(6,'0');
+    }
+    function balloonLoop(){
+      const W = window.innerWidth, H = window.innerHeight;
+      for(const b of balloons){
+        // gentle float up + wind
+        b.vy -= 0.002; // buoyancy
+        b.vx += Math.sin(Date.now()/1000 + b.x*0.01)*0.0006;
+
+        b.x += b.vx; b.y += b.vy;
+        // damping
+        b.vx *= 0.995; b.vy *= 0.995;
+
+        // bounds bounce
+        const left = b.w/2, right = W - b.w/2, top = b.h/2, bottom = H - b.h/2;
+        if(b.x<left){ b.x=left; b.vx = Math.abs(b.vx)*0.7 }
+        if(b.x>right){ b.x=right; b.vx = -Math.abs(b.vx)*0.7 }
+        if(b.y<top){ b.y=top; b.vy = Math.abs(b.vy)*0.4 }
+        if(b.y>bottom){ b.y=bottom; b.vy = -Math.abs(b.vy)*0.6 }
+
+        b.el.style.transform = `translate(${b.x - b.w/2}px, ${b.y - b.h/2}px)`;
+      }
+      requestAnimationFrame(balloonLoop);
+    }
+    spawnBalloons();
+    balloonLoop();
+
+    /* Prevent pull-to-refresh on aggressive drags (Android) */
+    document.addEventListener('touchmove', (e)=>{
+      if(e.touches.length>1) return;
+      e.preventDefault();
+    }, {passive:false});
+
+    /* Accessibility: keyboard open (desktop) */
+    gift.tabIndex = 0;
+    gift.addEventListener('keydown',(e)=>{ if(e.key==='Enter' || e.key===' ') gift.click(); });
+
+  })();
+  </script>
+
+  <!--
+    GitHub Pages használat:
+    1) Ezt a fájlt mentsd 'index.html' néven a repo gyökerébe.
+    2) Commit & push.
+    3) Repo → Settings → Pages → Source: 'Deploy from a branch' → main branch / root.
+    4) Várj pár másodpercet, és megnyílik a webes URL.
+  -->
+</body>
+</html>
