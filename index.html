@@ -28,7 +28,7 @@
     #assembled{display:inline-flex;gap:.18em;min-height:1em}
     .letter-slot{
       min-width:0.6em; display:inline-flex; align-items:center; justify-content:center;
-      border-bottom:2px dashed #ffffff33; color:#fff; font-weight:900; text-transform:lowercase;
+      border-bottom:2px dashed #ffffff33; color:#fff; font-weight:900;;
     }
     .letter-slot.space{border-bottom:none; width:.4em}
     .letter-slot.filled{border-bottom-color:transparent; color:#fff}
@@ -63,7 +63,8 @@
       border-radius:50% 50% 46% 46% / 56% 56% 44% 44%;
       box-shadow:0 6px 18px rgba(0,0,0,.35); pointer-events:auto;
       display:flex; align-items:center; justify-content:center; font-weight:900; color:#111; user-select:none;
-      transition:transform .2s ease;
+      transition:none;            /* <<< gördülékeny rAF animációhoz */
+      will-change:transform;      /* <<< GPU-gyorsítás */
     }
     .balloon:after{content:"";position:absolute;bottom:-24%;left:50%;width:2px;height:32%;background:#ddd;transform:translateX(-50%)}
     .balloon .shine{position:absolute;top:14%;left:26%;width:14%;height:20%;border-radius:50%;background:#ffffffaa;filter:blur(2px)}
@@ -104,19 +105,10 @@
       background:linear-gradient(180deg, #ff69a6, #ff3f8c); color:#fff; box-shadow:0 8px 20px rgba(255,63,140,.35);
     }
     .btn.secondary{background:#ffffff12; color:#fff; box-shadow:none}
-    .shake{animation:shake .5s}
-    @keyframes shake{10%{transform:translateX(-2px)} 20%{transform:translateX(2px)} 30%{transform:translateX(-2px)} 40%{transform:translateX(2px)}}
-
-    /* statikus konfetti a doboz alján – változatlan */
-    .static-confetti{
-      position:absolute; bottom:8%; left:50%; transform:translateX(-50%);
-      width:min(68vw,360px); display:flex; flex-wrap:wrap; gap:6px 10px; justify-content:center; pointer-events:none; z-index:6; padding:4px 0;
-    }
-    .static-confetti span{width:8px;height:8px;border-radius:2px;display:block;opacity:0.9;transform:rotate(15deg);}
   </style>
 </head>
 <body>
-  <!-- Háttér effektek: tűzijáték + konfetti -->
+  <!-- Háttér effektek: tűzijátéknak + konfetti -->
   <canvas id="fireworks" class="fx"></canvas>
   <canvas id="confetti" class="fx"></canvas>
 
@@ -142,7 +134,7 @@
           <div class="box"></div>
           <div class="glow"></div>
 
-          <!-- Ajándék kártyák (változatlan) -->
+          <!-- Ajándék kártyák -->
           <div class="cards">
             <div class="card"><div><b>Ajándék kupon</b>matcha teázás<br>🍵</div></div>
             <div class="card"><div><b>Ajándék kupon</b>IKONO belépő<br>📸</div></div>
@@ -174,15 +166,12 @@
   let filledCount = 0, totalLetters = targetText.replace(/\s/g,'').length;
   function isPuzzleComplete(){ return filledCount >= totalLetters; }
 
-  /* ======== Ajándék doboz nyitás blokkolása, amíg nincs kész ======== */
+  /* ======== Ajándék doboz nyitás – Nincs rázás, ha nem kész a felirat ======== */
   const gift = document.getElementById('gift');
   let opened = false;
   gift.addEventListener('click', (e) => {
     if (e.target.classList.contains('balloon')) return;
-    if (!isPuzzleComplete()){
-      gift.classList.add('shake'); setTimeout(()=>gift.classList.remove('shake'), 500);
-      return; // nem nyitható még
-    }
+    if (!isPuzzleComplete()) return; // <<< csak ez marad, nincs „shake”
     if (!opened){
       opened = true;
       gift.classList.add('open');
@@ -207,7 +196,7 @@
     const b = document.createElement('div');
     b.className = 'balloon';
     b.style.setProperty('--col', colors[i % colors.length]);
-    // szórjuk szét a képernyőn
+    // kezdő pozíció
     const x = rand(10, innerWidth - 70);
     const y = rand(60, innerHeight - 200);
     b.style.left = x+'px';
@@ -216,10 +205,15 @@
     const shine = document.createElement('div'); shine.className='shine'; b.appendChild(shine);
     balloonsWrap.appendChild(b);
 
+    // MÉRET cache – ne kérdezzük minden frame-ben (simább mobilon)
+    const rect = b.getBoundingClientRect();
+
     balloonState.push({
-      el:b, x, y,
+      el:b,
+      x, y,
+      baseLeft:x, baseTop:y,   // a translate-hez
+      w:rect.width, h:rect.height,
       vx: rand(-1.2,1.2), vy: rand(-1.0,1.0),
-      ax:0, ay:0,
       nextTurnAt: performance.now() + rand(300,900)
     });
   });
@@ -241,13 +235,14 @@
       b.x += b.vx;
       b.y += b.vy;
 
-      // falak: pattogás + kis véletlen turbó
+      // falak: pattogás
       if(b.x < LEFT_WALL){ b.x = LEFT_WALL; b.vx = Math.abs(b.vx)*0.9; }
-      if(b.x + b.el.offsetWidth > RIGHT_WALL){ b.x = RIGHT_WALL - b.el.offsetWidth; b.vx = -Math.abs(b.vx)*0.9; }
+      if(b.x + b.w > RIGHT_WALL){ b.x = RIGHT_WALL - b.w; b.vx = -Math.abs(b.vx)*0.9; }
       if(b.y < TOP_WALL+40){ b.y = TOP_WALL+40; b.vy = Math.abs(b.vy)*0.9; }
-      if(b.y + b.el.offsetHeight > BOTTOM_WALL-40){ b.y = BOTTOM_WALL - 40 - b.el.offsetHeight; b.vy = -Math.abs(b.vy)*0.9; }
+      if(b.y + b.h > BOTTOM_WALL-40){ b.y = BOTTOM_WALL - 40 - b.h; b.vy = -Math.abs(b.vy)*0.9; }
 
-      b.el.style.transform = `translate(${Math.round(b.x - parseFloat(b.el.style.left))}px, ${Math.round(b.y - parseFloat(b.el.style.top))}px)`;
+      // csak transform, subpixel engedve + GPU hint (translate3d)
+      b.el.style.transform = `translate3d(${(b.x - b.baseLeft)}px, ${(b.y - b.baseTop)}px, 0)`;
     }
     requestAnimationFrame(motionLoop);
   }
@@ -255,17 +250,14 @@
 
   /* ======== LUFIK KATTINTÁS: „pukkanás” + betű berepül a helyére ======== */
   function flyLetterToSlot(ch, fromX, fromY){
-    // keressük meg az első még üres megfelelő slotot
     const target = slots.find(s => !s.classList.contains('filled') && s.dataset.expected === ch);
-    if(!target) return; // safety
-    // képernyő koordináták
+    if(!target) return;
     const tRect = target.getBoundingClientRect();
     const fly = document.createElement('div');
     fly.className='fly-letter';
     fly.textContent = ch;
     document.body.appendChild(fly);
     fly.style.transform = `translate(${fromX}px, ${fromY}px)`;
-    // Force layout, majd célra animál
     requestAnimationFrame(()=>{
       const destX = tRect.left + tRect.width/2;
       const destY = tRect.top + tRect.height/2;
@@ -277,7 +269,6 @@
         filledCount++;
         fly.remove();
         if(isPuzzleComplete()){
-          // kis felirat, hogy nyitható
           const hint = document.querySelector('.hint');
           hint.textContent = 'Kész! Most már kinyithatod a dobozt 🎁';
           burstConfetti(120);
@@ -291,18 +282,18 @@
     if(!bEl) return;
     const letter = bEl.dataset.letter;
     const rect = bEl.getBoundingClientRect();
-    // repülő betű
     flyLetterToSlot(letter, rect.left+rect.width/2, rect.top+rect.height/2);
-    // pukkanás + konfetti
     bEl.classList.add('popped');
     burstConfetti(28, rect.left+rect.width/2, rect.top+rect.height/2);
     setTimeout(()=>bEl.remove(), 260);
   }, {passive:true});
 
-  /* ======== MODAL gombok ======== */
+  /* ======== MODAL gomb ======== */
   const modal = document.getElementById('taskModal');
   document.getElementById('okBtn').addEventListener('click', ()=> modal.classList.remove('show'));
-  document.getElementById('laterBtn').addEventListener('click', ()=> modal.classList.remove('show'));
+  // (védő ellenőrzés, ha nincs „laterBtn”)
+  const laterBtn = document.getElementById('laterBtn');
+  if(laterBtn) laterBtn.addEventListener('click', ()=> modal.classList.remove('show'));
 
   /* ======== TŰZIJÁTÉK ======== */
   const fwCanvas = document.getElementById('fireworks');
@@ -350,7 +341,7 @@
     fwLoop(); tick();
   }
 
-  /* ======== KONFETTI – folyamatos esés (meghagyva a korábbi verziót) ======== */
+  /* ======== KONFETTI – folyamatos esés ======== */
   const confettiCanvas = document.getElementById('confetti');
   const cctx = confettiCanvas.getContext('2d');
   const bits=[];
