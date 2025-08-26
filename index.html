@@ -63,8 +63,8 @@
       border-radius:50% 50% 46% 46% / 56% 56% 44% 44%;
       box-shadow:0 6px 18px rgba(0,0,0,.35); pointer-events:auto;
       display:flex; align-items:center; justify-content:center; font-weight:900; color:#111; user-select:none;
-      transition:none;            /* <<< gördülékeny rAF animációhoz */
-      will-change:transform;      /* <<< GPU-gyorsítás */
+      transition:none;
+      will-change:transform;
     }
     .balloon:after{content:"";position:absolute;bottom:-24%;left:50%;width:2px;height:32%;background:#ddd;transform:translateX(-50%)}
     .balloon .shine{position:absolute;top:14%;left:26%;width:14%;height:20%;border-radius:50%;background:#ffffffaa;filter:blur(2px)}
@@ -171,7 +171,7 @@
   let opened = false;
   gift.addEventListener('click', (e) => {
     if (e.target.classList.contains('balloon')) return;
-    if (!isPuzzleComplete()) return; // <<< csak ez marad, nincs „shake”
+    if (!isPuzzleComplete()) return;
     if (!opened){
       opened = true;
       gift.classList.add('open');
@@ -192,6 +192,16 @@
 
   function rand(min,max){ return Math.random()*(max-min)+min; }
 
+  // új: cél-sebességek beállítása a hosszabb egyenes szakaszokhoz
+  function setNewTarget(b, ts){
+    const speed = rand(0.6, 1.4);               // mérsékelt sebesség
+    const angle = rand(0, Math.PI*2);           // tetszőleges irány
+    b.tx = Math.cos(angle)*speed;               // target vx
+    b.ty = Math.sin(angle)*speed;               // target vy
+    b.nextTurnAt = ts + rand(1600, 3200);       // hosszabb ideig tartsa az irányt
+  }
+
+  const now0 = performance.now();
   letters.forEach((letter,i)=>{
     const b = document.createElement('div');
     b.className = 'balloon';
@@ -205,43 +215,64 @@
     const shine = document.createElement('div'); shine.className='shine'; b.appendChild(shine);
     balloonsWrap.appendChild(b);
 
-    // MÉRET cache – ne kérdezzük minden frame-ben (simább mobilon)
     const rect = b.getBoundingClientRect();
-
-    balloonState.push({
+    const state = {
       el:b,
       x, y,
-      baseLeft:x, baseTop:y,   // a translate-hez
+      baseLeft:x, baseTop:y,
       w:rect.width, h:rect.height,
-      vx: rand(-1.2,1.2), vy: rand(-1.0,1.0),
-      nextTurnAt: performance.now() + rand(300,900)
-    });
+      vx:0, vy:0,        // aktuális sebesség
+      tx:0, ty:0,        // cél sebesség (irány)
+      nextTurnAt: now0   // átírjuk a setNewTarget-ben
+    };
+    setNewTarget(state, now0);          // első cél
+    state.vx = state.tx;                // induljon a cél irányába
+    state.vy = state.ty;
+    balloonState.push(state);
   });
 
-  /* ======== LUFIK MOZGÁSA: gyors irányváltások, pattogás a széleken ======== */
+  /* ======== LUFIK MOZGÁSA: sima kormányzás a cél sebességhez + pattogás ======== */
   const LEFT_WALL = 0, TOP_WALL = 0;
   function motionLoop(ts){
     const RIGHT_WALL = innerWidth, BOTTOM_WALL = innerHeight;
     for(const b of balloonState){
-      // időnként hirtelen új irány
+      // ritkább irányváltás – új cél beállítás
       if(ts >= b.nextTurnAt){
-        const speed = rand(0.8, 1.8);
-        const angle = rand(0, Math.PI*2);
-        b.vx = Math.cos(angle)*speed;
-        b.vy = Math.sin(angle)*speed;
-        b.nextTurnAt = ts + rand(280, 800);
+        setNewTarget(b, ts);
       }
+
+      // finom kormányzás a cél sebesség felé (nem hirtelen váltás)
+      const steer = 0.03;                 // minél kisebb, annál simább
+      b.vx += (b.tx - b.vx) * steer;
+      b.vy += (b.ty - b.vy) * steer;
+
       // mozgás
       b.x += b.vx;
       b.y += b.vy;
 
-      // falak: pattogás
-      if(b.x < LEFT_WALL){ b.x = LEFT_WALL; b.vx = Math.abs(b.vx)*0.9; }
-      if(b.x + b.w > RIGHT_WALL){ b.x = RIGHT_WALL - b.w; b.vx = -Math.abs(b.vx)*0.9; }
-      if(b.y < TOP_WALL+40){ b.y = TOP_WALL+40; b.vy = Math.abs(b.vy)*0.9; }
-      if(b.y + b.h > BOTTOM_WALL-40){ b.y = BOTTOM_WALL - 40 - b.h; b.vy = -Math.abs(b.vy)*0.9; }
+      // falak: pattogás – a célsebességet is tükrözzük, hogy ne forduljon vissza hirtelen
+      if(b.x < LEFT_WALL){
+        b.x = LEFT_WALL;
+        b.vx = Math.abs(b.vx)*0.9;
+        b.tx = Math.abs(b.tx);
+      }
+      if(b.x + b.w > RIGHT_WALL){
+        b.x = RIGHT_WALL - b.w;
+        b.vx = -Math.abs(b.vx)*0.9;
+        b.tx = -Math.abs(b.tx);
+      }
+      if(b.y < TOP_WALL+40){
+        b.y = TOP_WALL+40;
+        b.vy = Math.abs(b.vy)*0.9;
+        b.ty = Math.abs(b.ty);
+      }
+      if(b.y + b.h > BOTTOM_WALL-40){
+        b.y = BOTTOM_WALL - 40 - b.h;
+        b.vy = -Math.abs(b.vy)*0.9;
+        b.ty = -Math.abs(b.ty);
+      }
 
-      // csak transform, subpixel engedve + GPU hint (translate3d)
+      // csak transform
       b.el.style.transform = `translate3d(${(b.x - b.baseLeft)}px, ${(b.y - b.baseTop)}px, 0)`;
     }
     requestAnimationFrame(motionLoop);
@@ -277,7 +308,8 @@
     });
   }
 
-  balloonsWrap.addEventListener('click', (e)=>{
+  const balloonsWrapEl = document.getElementById('balloons');
+  balloonsWrapEl.addEventListener('click', (e)=>{
     const bEl = e.target.closest('.balloon');
     if(!bEl) return;
     const letter = bEl.dataset.letter;
@@ -291,9 +323,6 @@
   /* ======== MODAL gomb ======== */
   const modal = document.getElementById('taskModal');
   document.getElementById('okBtn').addEventListener('click', ()=> modal.classList.remove('show'));
-  // (védő ellenőrzés, ha nincs „laterBtn”)
-  const laterBtn = document.getElementById('laterBtn');
-  if(laterBtn) laterBtn.addEventListener('click', ()=> modal.classList.remove('show'));
 
   /* ======== TŰZIJÁTÉK ======== */
   const fwCanvas = document.getElementById('fireworks');
